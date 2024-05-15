@@ -51,7 +51,7 @@ fn build_parser() -> Command {
         )
 }
 
-fn run_executable(c: &config::BingoConfigFile, name: &str, args: Vec<String>) {
+fn run_executable(c: &config::BingoConfigFile, name: &str, args: Vec<String>, alert: bool) {
     let executable = &c.config.executables;
     let executable = executable.iter().find(|e| e.name == name);
     match executable {
@@ -67,7 +67,12 @@ fn run_executable(c: &config::BingoConfigFile, name: &str, args: Vec<String>) {
                 }
             }
         }
-        None => {}
+        None => {
+            if alert {
+                eprintln!("Executable {} not found.", name);
+                std::process::exit(1);
+            }
+        }
     }
 }
 
@@ -102,7 +107,7 @@ pub fn cli_run() {
                 let executables = &config_file.config.executables;
                 let executable = executables.iter().find(|e| e.name == *command);
                 if let Some(_) = executable {
-                    run_executable(&config_file, command, command_args);
+                    run_executable(&config_file, command, command_args, false);
                     std::process::exit(0);
                 }
             }
@@ -221,7 +226,7 @@ pub fn cli_run() {
                 Some(a) => a.map(|a| a.clone()).collect::<Vec<String>>(),
                 None => vec![],
             };
-            run_executable(&config_file, &name, args);
+            run_executable(&config_file, &name, args, true);
         }
         _ => {
             eprintln!("No command provided.");
