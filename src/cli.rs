@@ -46,6 +46,7 @@ fn build_parser() -> Command {
                     Arg::new("args")
                         .action(clap::ArgAction::Append)
                         .default_missing_value("")
+                        .allow_hyphen_values(true)
                         .help("Arguments"),
                 ),
         )
