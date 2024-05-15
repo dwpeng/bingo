@@ -188,7 +188,8 @@ impl BingoConfig {
         // check if name already exists
         for executable in &self.executables {
             if executable.name == name {
-                panic!("Executable with name {} already exists", name);
+                let e = BingoError::DuplicateExecutableName(name.to_string());
+                return Err(e);
             }
         }
         // check if path exists

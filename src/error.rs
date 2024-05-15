@@ -4,8 +4,8 @@ use thiserror::Error;
 pub enum BingoError {
     #[error("file not found: {0}")]
     FileNotFound(String),
-    #[error("duplicate executable name: {0} and {1}")]
-    DuplicateExecutableName(String, String),
+    #[error("duplicate executable name: {0}")]
+    DuplicateExecutableName(String),
     #[error("config file not found: {0}")]
     ConfigFileNotFound(String),
     #[error("config file error: {0}")]
