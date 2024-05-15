@@ -51,6 +51,28 @@ fn build_parser() -> Command {
         )
 }
 
+fn run_executable(c: &config::BingoConfigFile, name: &str, args: Vec<String>) {
+    let executable = &c.config.executables;
+    let executable = executable.iter().find(|e| e.name == name);
+    match executable {
+        Some(e) => {
+            let path = e.path.clone();
+            let path = std::path::Path::new(&path);
+            let status = std::process::Command::new(path).args(args).status();
+            match status {
+                Ok(_) => {}
+                Err(e) => {
+                    eprintln!("{}", e);
+                    std::process::exit(1);
+                }
+            }
+        }
+        None => {}
+    }
+}
+
+static SUBCOMMANDS: &[&str] = &["cp", "ln", "rm", "mv", "ls", "run", "r"];
+
 pub fn cli_run() {
     match config::BingoConfigFile::init() {
         Ok(_) => {}
@@ -65,6 +87,25 @@ pub fn cli_run() {
         Err(e) => {
             eprintln!("{}", e);
             std::process::exit(1);
+        }
+    }
+    {
+        let args = std::env::args().collect::<Vec<String>>();
+        if args.len() > 1 {
+            let command = &args[1];
+            let mut command_args = vec![];
+            if !SUBCOMMANDS.contains(&command.as_str()) {
+                // check if command is a executable
+                if args.len() > 2 {
+                    command_args = args[2..].to_vec();
+                }
+                let executables = &config_file.config.executables;
+                let executable = executables.iter().find(|e| e.name == *command);
+                if let Some(_) = executable {
+                    run_executable(&config_file, command, command_args);
+                    std::process::exit(0);
+                }
+            }
         }
     }
 
@@ -180,30 +221,10 @@ pub fn cli_run() {
                 Some(a) => a.map(|a| a.clone()).collect::<Vec<String>>(),
                 None => vec![],
             };
-
-            let executable = config_file.config.executables;
-            let executable = executable.iter().find(|e| e.name == name);
-            match executable {
-                Some(e) => {
-                    let path = e.path.clone();
-                    let path = std::path::Path::new(&path);
-                    let status = std::process::Command::new(path).args(args).status();
-                    match status {
-                        Ok(_) => {}
-                        Err(e) => {
-                            eprintln!("{}", e);
-                            std::process::exit(1);
-                        }
-                    }
-                }
-                None => {
-                    eprintln!("Executable not found: {}", name);
-                    std::process::exit(1);
-                }
-            }
+            run_executable(&config_file, &name, args);
         }
         _ => {
-            eprintln!("Invalid command");
+            eprintln!("No command provided.");
             std::process::exit(1);
         }
     }
