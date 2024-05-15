@@ -1,5 +1,14 @@
 一个用Rust编写的可执行文件管理器。它可以将一些可执行文件添加到`$HOME/.bingo/bin`目录，并通过`bingo run <name>`来调用它们。
 
+## 安装
+
+```bash
+# 使用cargo安装
+cargo install bingogo
+```
+
+你也可以在发布页面找到并下载它。
+
 ## 使用方法
 
 ### 添加新的可执行文件

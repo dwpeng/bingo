@@ -4,6 +4,14 @@
 
 An executable file manager written in Rust. It can add some executable files to the `$HOME/.bingo/bin` directory and invoke them by `bingo run <name>`.
 
+## Install
+
+```bash
+# install by cargo
+cargo install bingogo
+```
+
+You also can find in release page and download it.
 
 ## Usage
 
