@@ -3,7 +3,7 @@ use clap::{Arg, Command};
 use colored::*;
 
 fn msg(msg: &str) -> String {
-    format!("{}{}", msg, config::get_bingo_bin_dir().green())
+    format!("{} {}", msg, config::get_bingo_bin_dir().green())
 }
 
 fn build_parser() -> Command {
@@ -36,7 +36,7 @@ fn build_parser() -> Command {
                         .help("New name of executable"),
                 ),
         )
-        .subcommand(Command::new("ls").about(msg("List executables in ")))
+        .subcommand(Command::new("ls").about(msg("List executables in")))
         .subcommand(
             Command::new("run")
                 .visible_alias("r")
