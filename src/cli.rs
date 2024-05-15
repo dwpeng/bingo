@@ -230,7 +230,7 @@ pub fn cli_run() {
             run_executable(&config_file, &name, args, true);
         }
         _ => {
-            eprintln!("No command provided.");
+            let _ = build_parser().print_help();
             std::process::exit(1);
         }
     }
