@@ -1,0 +1,64 @@
+# Based on https://github.com/typst/typst/blob/main/.github/workflows/release.yml
+
+name: Build Release Binaries
+on:
+  release:
+    types: [published]
+
+jobs:
+  build-release:
+    name: release ${{ matrix.target }}
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+        - target: x86_64-unknown-linux-musl
+          os: ubuntu-latest
+          cross: true
+        - target: aarch64-unknown-linux-musl
+          os: ubuntu-latest
+          cross: true
+        - target: armv7-unknown-linux-musleabi
+          os: ubuntu-latest
+          cross: true
+        - target: x86_64-apple-darwin
+          os: macos-latest
+          cross: false
+        - target: aarch64-apple-darwin
+          os: macos-latest
+          cross: false
+
+    steps:
+    - uses: actions/checkout@v4
+    - uses: dtolnay/rust-toolchain@1.77.0
+      with:
+        target: ${{ matrix.target }}
+
+    - name: Run Cross
+      if: ${{ matrix.cross }}
+      run: |
+        cargo install cross --git https://github.com/cross-rs/cross.git
+        cross build -p bingogo --release --target ${{ matrix.target }}
+
+    - name: Run Cargo
+      if: ${{ !matrix.cross }}
+      run: cargo build -p bingogo --release --target ${{ matrix.target }}
+
+    - name: create artifact directory
+      shell: bash
+      run: |
+        directory=bingogo-${{ matrix.target }}
+        mkdir $directory
+        cp README.md LICENSE NOTICE $directory
+        cp target/${{ matrix.target }}/release/bingogo $directory
+        tar cJf $directory.tar.xz $directory
+
+    - uses: ncipollo/release-action@v1.14.0
+      with:
+        artifacts: "bingogo-${{ matrix.target }}.*"
+        allowUpdates: true
+        omitNameDuringUpdate: true
+        omitBodyDuringUpdate: true
