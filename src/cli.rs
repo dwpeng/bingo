@@ -134,10 +134,7 @@ pub fn cli_run() {
                 &name,
                 config::ExecutableType::LinkBinary,
             ) {
-                Ok(_) => {
-                    println!("{} {} {}", "Linked".green(), name, "to".green());
-                    println!("{}", path.display());
-                }
+                Ok(_) => {}
                 Err(e) => {
                     eprintln!("{}", e);
                     std::process::exit(1);
@@ -160,10 +157,7 @@ pub fn cli_run() {
                 .config
                 .add_executable(&path, &name, config::ExecutableType::Binary)
             {
-                Ok(_) => {
-                    println!("{} {} {}", "Copied".green(), name, "to".green());
-                    println!("{}", path.display());
-                }
+                Ok(_) => {}
                 Err(e) => {
                     eprintln!("{}", e);
                     std::process::exit(1);
@@ -174,9 +168,7 @@ pub fn cli_run() {
         Some(("rm", args)) => {
             let name = args.get_one::<String>("name").unwrap().clone();
             match config_file.config.remove_executable(&name) {
-                Ok(_) => {
-                    println!("{} {}", "Removed".green(), name);
-                }
+                Ok(_) => {}
                 Err(e) => {
                     eprintln!("{}", e);
                     std::process::exit(1);
@@ -188,10 +180,7 @@ pub fn cli_run() {
             let old = args.get_one::<String>("old").unwrap().clone();
             let new = args.get_one::<String>("new").unwrap().clone();
             match config_file.config.rename_executable(&old, &new) {
-                Ok(_) => {
-                    println!("{} {} {}", "Renamed".green(), old, "to".green());
-                    println!("{}", new);
-                }
+                Ok(_) => {}
                 Err(e) => {
                     eprintln!("{}", e);
                     std::process::exit(1);
