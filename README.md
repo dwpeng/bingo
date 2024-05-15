@@ -2,7 +2,7 @@
 
 [中文](./README-ZH_CN.md)
 
-A executable file manager written in Rust. It can add some executable files to the `$HOME/.bingo/bin` directory and invoke them by `bingo run <name>`.
+An executable file manager written in Rust. It can add some executable files to the `$HOME/.bingo/bin` directory and invoke them by `bingo run <name>`.
 
 
 ## Usage
