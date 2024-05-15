@@ -1,3 +1,3 @@
 fn main() {
-    bingo::cli::cli_run();
+    bingogo::cli::cli_run();
 }
