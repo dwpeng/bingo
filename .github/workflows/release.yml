@@ -52,7 +52,7 @@ jobs:
       run: |
         directory=bingogo-${{ matrix.target }}
         mkdir $directory
-        cp target/${{ matrix.target }}/release/bingogo $directory
+        cp target/${{ matrix.target }}/release/bingo $directory
         tar cJf $directory.tar.xz $directory
 
     - uses: ncipollo/release-action@v1.14.0
