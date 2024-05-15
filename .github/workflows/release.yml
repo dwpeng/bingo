@@ -52,7 +52,6 @@ jobs:
       run: |
         directory=bingogo-${{ matrix.target }}
         mkdir $directory
-        cp README.md LICENSE NOTICE $directory
         cp target/${{ matrix.target }}/release/bingogo $directory
         tar cJf $directory.tar.xz $directory
 
