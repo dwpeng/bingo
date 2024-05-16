@@ -162,8 +162,11 @@ impl BingoConfig {
         }
         // make executable
         let dest = std::path::Path::new(&dest);
-        if let Ok(perms) = dest.metadata() {
-            perms.permissions().set_mode(0o755);
+        if let Ok(perms) = match executable_type {
+            ExecutableType::Binary => dest.metadata(),
+            ExecutableType::LinkBinary => dest.symlink_metadata(),
+        } {
+            perms.permissions().set_mode(0o777);
             return Ok(());
         } else {
             let e = BingoError::PermissionDenied(dest.to_str().unwrap().to_string());
@@ -204,10 +207,23 @@ impl BingoConfig {
             return Err(e);
         }
 
+        let mut path = path.to_path_buf();
+        // convert path to absolute path
+        if !path.is_absolute() {
+            path = std::env::current_dir().unwrap().join(path);
+        }
+
         // check if path is executable
-        if !path.metadata().unwrap().permissions().mode() & 0o111 != 0 {
-            let e = BingoError::ExecutableNotExecutable(path.to_str().unwrap().to_string());
-            return Err(e);
+        if path.is_symlink() {
+            if !path.symlink_metadata().unwrap().permissions().mode() & 0o111 != 0 {
+                let e = BingoError::ExecutableNotExecutable(path.to_str().unwrap().to_string());
+                return Err(e);
+            }
+        } else {
+            if !path.metadata().unwrap().permissions().mode() & 0o111 != 0 {
+                let e = BingoError::ExecutableNotExecutable(path.to_str().unwrap().to_string());
+                return Err(e);
+            }
         }
 
         // check if executable already exists
