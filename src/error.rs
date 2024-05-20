@@ -16,6 +16,10 @@ pub enum BingoError {
     ExecutableNotExecutable(String),
     #[error("Permission denied: {0}")]
     PermissionDenied(String),
+    #[error("Copy error: {0}")]
+    CopyError(String),
+    #[error("Link error: {0}")]
+    LinkError(String),
 }
 
 pub type BingoResult<T> = Result<T, BingoError>;

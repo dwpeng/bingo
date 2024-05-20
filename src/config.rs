@@ -126,22 +126,46 @@ impl Default for BingoConfig {
     }
 }
 
-fn link_file(src: &str, dest: &str) {
+fn link_file(src: &str, dest: &str) -> BingoResult<()> {
     let src = std::path::Path::new(src);
     let dest = std::path::Path::new(dest);
     if dest.exists() {
-        std::fs::remove_file(dest).unwrap();
+        match std::fs::remove_file(dest) {
+            Ok(_) => (),
+            Err(err) => {
+                let e = BingoError::LinkError(err.to_string());
+                return Err(e);
+            }
+        }
     }
-    std::os::unix::fs::symlink(src, dest).unwrap();
+    match std::os::unix::fs::symlink(src, dest) {
+        Ok(_) => Ok(()),
+        Err(err) => {
+            let e = BingoError::LinkError(err.to_string());
+            Err(e)
+        }
+    }
 }
 
-fn copy_file(src: &str, dest: &str) {
+fn copy_file(src: &str, dest: &str) -> BingoResult<()> {
     let src = std::path::Path::new(src);
     let dest = std::path::Path::new(dest);
     if dest.exists() {
-        std::fs::remove_file(dest).unwrap();
+        match std::fs::remove_file(dest) {
+            Ok(_) => (),
+            Err(err) => {
+                let e = BingoError::CopyError(err.to_string());
+                return Err(e);
+            }
+        }
     }
-    std::fs::copy(src, dest).unwrap();
+    match std::fs::copy(src, dest) {
+        Ok(_) => Ok(()),
+        Err(err) => {
+            let e = BingoError::CopyError(err.to_string());
+            Err(e)
+        }
+    }
 }
 
 impl BingoConfig {
@@ -157,8 +181,8 @@ impl BingoConfig {
         let config_dir = get_bingo_bin_dir();
         let dest = format!("{}/{}", config_dir, name);
         match executable_type {
-            ExecutableType::Binary => copy_file(path, &dest),
-            ExecutableType::LinkBinary => link_file(path, &dest),
+            ExecutableType::Binary => copy_file(path, &dest)?,
+            ExecutableType::LinkBinary => link_file(path, &dest)?,
         }
         // make executable
         let dest = std::path::Path::new(&dest);
